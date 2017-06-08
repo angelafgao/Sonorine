@@ -14,7 +14,7 @@ function [trans_x, trans_y, rotation] = calculateTranslationRotation(prev_trans_
         error_matrix = calculateErrorMatrix(prev_trans_x, prev_trans_y, img1, temp_img2, level);
         [min_error, min_error_index] = min(error_matrix);
         new_trans_x = mod(min_error_index-1, 5) - 2 + prev_trans_x;
-        new_trans_y = floor((min_error_index/5)) - 2 + prev_trans_y;
+        new_trans_y = floor(((min_error_index-1)/5)) - 2 + prev_trans_y;
         rotation_matrix(rot_index + 7, :) = [min_error, new_trans_x, new_trans_y];
     end
     [~, rotation_index] = min(rotation_matrix(:, 1));

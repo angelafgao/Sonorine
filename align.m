@@ -1,6 +1,6 @@
 % initialize translation variables
 fileID = fopen('translations.txt', 'w');
-fprintf(fileID, 'Sonorine      Angle %6s %6s %6s\n', 'x', 'y', 'rot');
+fprintf(fileID, 'Sonorine      Angle %6s %6s  %12s\n', 'x', 'y', 'rot');
 for i = 1:120   % Loop on the number of sonorines
     for j = 1:3 % Loop on the different angle images for each sonorine
         trans_x = 0;
@@ -8,9 +8,9 @@ for i = 1:120   % Loop on the number of sonorines
         rotation = 0;
         for level = 1:8 % Loop on each level of downsampling
             level_name = 9-level;
-            path = sprintf('../Processed/Down%d/', level_name);
-            img1_path = sprintf('Sonorine_%03d/sonorine_%03d_000_down%d.tiff', 1, 1, level_name);
-            img2_path = sprintf('Sonorine_%03d/sonorine_%03d_%03d_down%d.tiff', 1, 1, 90*j, level_name);
+            path = sprintf('../Processed/Cropped_downsampled/Down%d/', level_name);
+            img1_path = sprintf('Sonorine_%03d/sonorine_%03d_000.tiff', i, i);
+            img2_path = sprintf('Sonorine_%03d/sonorine_%03d_%03d.tiff', i, i, 90*j);
 
             img1 = imread(strcat(path, img1_path));
             img2 = imread(strcat(path, img2_path));
@@ -24,7 +24,7 @@ for i = 1:120   % Loop on the number of sonorines
             trans_y = trans_y*2;
         end
         % Save the result of each image pair to translations.txt
-        fprintf(fileID, '%8d        %03d %6d %6d %6d\n', i, 90*j, trans_x, trans_y, rotation);
+        fprintf(fileID, '%8d        %03d %6d %6d  %12d\n', i, 90*j, trans_x, trans_y, rotation);
     end
     fprintf(fileID, '\n');
 end

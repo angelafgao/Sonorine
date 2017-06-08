@@ -10,6 +10,8 @@ function [error_matrix] = calculateErrorMatrix(prev_trans_x, prev_trans_y, img1,
         for j = -2:2
             start = 2^(level+1) - 2;
             check1 = img1(start+1:size(img1, 1)-start, start+1:size(img1, 2)-start);
+            %x = sprintf('level%d\n', level);
+            %fprintf(x);
             check2 = img2(prev_trans_y+start+1+i:prev_trans_y+size(img2, 1)-start+i,...
                 prev_trans_x+start+1+j:prev_trans_x+size(img2, 2)-start+j);
             sub = abs(check1 - check2);

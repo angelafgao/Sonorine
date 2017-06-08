@@ -21,5 +21,5 @@ function [trans_x, trans_y, rotation] = calculateTranslationRotation(prev_trans_
     rotation_col = rotation_matrix(rotation_index, :);
     trans_x = rotation_col(1, 2);
     trans_y = rotation_col(1, 3);
-    rotation = (rotation_index - 7)/(2^(level-1));
+    rotation = prev_rotation + (rotation_index - 7)/(2^(level-1));
 end

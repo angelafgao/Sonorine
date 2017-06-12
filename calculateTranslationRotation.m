@@ -8,7 +8,7 @@ function [trans_x, trans_y, rotation] = calculateTranslationRotation(prev_trans_
     y_length = size(img2, 1);
     rotation_matrix = zeros([13, 3]);
     for rot_index = -6:6  
-        temp_img2 = imrotate(img2, prev_rotation + rot_index/(2^(level-1)));
+        temp_img2 = imrotate(img2, prev_rotation + rot_index/(2^(level-1)), 'bicubic');
         temp_img2 = cropRotate(temp_img2, x_length, y_length);
 
         error_matrix = calculateErrorMatrix(prev_trans_x, prev_trans_y, img1, temp_img2, level);

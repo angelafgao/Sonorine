@@ -30,7 +30,7 @@ for i = 3:3
         trans_info(j + 1, 2) = rot_trans((i-1)*3+j, 2);
         % rotate and save image into temp_images
         rot = rot_trans((i-1)*3+j, 3);
-        im_rot = imrotate(im, rot);
+        im_rot = imrotate(im, rot, 'bicubic');
         temp_images(:, :, j+1) = cropRotate(im_rot, w, h);
     end
     

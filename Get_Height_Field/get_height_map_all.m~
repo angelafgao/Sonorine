@@ -3,18 +3,16 @@ for i = 4:4
     path = sprintf('../../Processed/Aligned2/Sonorine_%03d/sonorine_%03d_000.tiff', i, i);
     m = matfile(filename);
     normal_map = m.normal_map;
-    [X, Y, Z, cx, cy, r] = gui(path);
+    Z = gui_all(path);
     
-    dx = 20;
-    nx = normal_map(cy-r:cy+r, cx-r-dx:cx+r-dx, 1);
-    ny = normal_map(cy-r:cy+r, cx-r-dx:cx+r-dx, 2);
-    nz = normal_map(cy-r:cy+r, cx-r-dx:cx+r-dx, 3);
+    nx = normal_map(:, :, 1);
+    ny = normal_map(:, :, 2);
+    nz = normal_map(:, :, 3);
     L = sqrt(nx.^2 + ny.^2 + nz.^2);
     U = nx./L;
     V = ny./L;
-    W = nz./L ;
     
-    s = size(X);
+    s = size(Z);
     num_rows = s(1);
     num_cols = s(2);
     total = num_rows*num_cols;
@@ -23,7 +21,7 @@ for i = 4:4
     b(1:total) = reshape(U', total, 1); % fill top of b with n_x
     b(total+1:total*2) = reshape(V', total, 1); % fill middle of b with n_y
 
-    A = fill_matrix_lin(num_cols, num_rows, Z);
+    A = fill_matrix_lin_all(num_cols, num_rows, Z);
     tol = 1e-6;
     iter = 160;
     
@@ -32,7 +30,7 @@ for i = 4:4
 
     fprintf('got least squares \n');
     x = x(1:total);
-    height_map = reshape(x, s);
+    height_map = reshape(x, [s(2) s(1)]);
     height_map = height_map';
     
     figure

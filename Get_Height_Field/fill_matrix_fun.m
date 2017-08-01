@@ -1,4 +1,4 @@
-function A = fill_matrix_sobel(num_rows, num_cols, Z)
+function A = fill_matrix_fun(num_rows, num_cols, eps)
     total = num_rows*num_cols;
     A = sparse(3*total, total);
     one = ones(total, 1);
@@ -14,6 +14,5 @@ function A = fill_matrix_sobel(num_rows, num_cols, Z)
     d = [start1 start1+1 start1+2 start2 start2+1 start2+2];
     A(total+1:total*2, :) = spdiags(columns, d, total, total);
     
-    A3_main_diag = reshape(Z, total, 1);
-    A(total*2+1:total*3, :) = spdiags(A3_main_diag, 0, total, total);
+    A(total*2+1:total*3, :) = spdiags(one*eps, 0, total, total);
 end

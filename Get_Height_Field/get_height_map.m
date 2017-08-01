@@ -4,22 +4,28 @@ Z = get_value(X, Y, true);
 [nx, ny, nz] = surfnorm(X, Y, Z);
 %}
 
-filename = 'Normal_Map/sonorine_001.mat';
+filename = '../Normal_Map/sonorine_001.mat';
 m = matfile(filename);
 normal_map = m.normal_map;
 s = size(normal_map);
-[X, Y] = meshgrid(1:s(1), 1:s(2));
+h = s(1);
+w = s(2);
+c = 5699;
+start_h = floor((h-c)/2);
+start_w = floor((w-c)/2);
+[X, Y] = meshgrid(1:c+1, 1:c+1);
 
-nx = normal_map(:, :, 1);
-ny = normal_map(:, :, 2);
-nz = normal_map(:, :, 3);
+nx = normal_map(start_h:start_h+c, start_w:start_w+c, 1);
+ny = normal_map(start_h:start_h+c, start_w:start_w+c, 2);
+nz = normal_map(start_h:start_h+c, start_w:start_w+c, 3);
 L = sqrt(nx.^2 + ny.^2 + nz.^2);
 U = nx./L;
 V = ny./L;
 W = nz./L ;
 
-fprintf('got map');
+fprintf('got map \n');
 
+eps = 1e-6;
 %{
 %figure
 %quiver3(X, Y, Z, U, V, W)
@@ -33,59 +39,28 @@ s = size(X);
 num_rows = s(1);
 num_cols = s(2);
 total = num_rows*num_cols;
+b = zeros(3*total, 1);
 
-A = sparse(3*total, 3*total);
-b = sparse(3*total, 1);
+b(1:total) = reshape(U', total, 1); % fill top of b with n_x
+b(total+1:total*2) = reshape(V', total, 1); % fill middle of b with n_y
 
-eps = 0.5;
+A = fill_matrix2(num_cols, num_rows, eps);
 
-for i = 0:num_rows-1
-    for j = 1:num_cols
-        x = i*num_cols + j;
-        y = x + total;
-        cons = x + 2*total;
-        b(x) = U(i+1,j);
-        b(y) = V(i+1, j);
-        %B(cons) = 0;
-        A(cons, x) = eps;
-        if is_edge(num_rows, num_cols, i, j) == false
-            A(x, x-1) = 2/8;
-            A(x, x+1) = -2/8;
-            A(x, x-num_cols-1) = 1/8;
-            A(x, x+num_cols-1) = 1/8;
-            A(x, x-num_cols+1) = -1/8;
-            A(x, x+num_cols+1) = -1/8;
-            
-            A(y, x-num_cols) = 2/8;
-            A(y, x+num_cols) = -2/8;
-            A(y, x-num_cols-1) = 1/8;
-            A(y, x-num_cols+1) = 1/8;
-            A(y, x+num_cols-1) = -1/8;
-            A(y, x+num_cols+1) = -1/8;
-           
-        end
-    end
-end
-
-fprintf('made A');
+fprintf('made A\n');
 x = cgls(A, b); % use an iterative method linear least squares, conjugate gradient
-%x = lsqnonneg(A,b);
-fprintf('got least squares ');
+
+fprintf('got least squares \n');
 x = x(1:total);
-filename = sprintf('Height_Map/sonorine_%03d.mat', i);
-save(filename, 'x');
-height_map = vec2mat(x, num_cols);
 
-%figure
-%quiver3(X, Y, Z, U, V, W)
-%hold on
-%subplot(1,2,2)
+height_map = reshape(x, s);
+height_map = height_map';
+
+filename = '../Height_Map/sonorine_001_e-6.mat';
+save(filename, 'height_map');
 
 figure
-surf(X, Y, height_map)
+surf(X, Y, height_map, 'EdgeColor', 'none');
 
 figure
-%subplot(1,2,1)
-%pcolor(X, Y, Z);
-%subplot(1,2,2)
-pcolor(X, Y, height_map)
+h = pcolor(X, Y, height_map);
+set(h, 'edgecolor', 'none');
